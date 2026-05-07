@@ -29,41 +29,77 @@ def get_latest_version(file_names):
     return latest_file
 
 def inverse_rotate_vector_field_aligned(Ax, Ay, Az, Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz):
-    An = (Ax * Nx) + (Ay * Px) + (Az * Qx)  # A dot N = A_parallel
-    Ap = (Ax * Ny) + (Ay * Py) + (Az * Qy)  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
-    Aq = (Ax * Nz) + (Ay * Pz) + (Az * Qz)  # 
+    if Ax.ndim == 4:
+        An = (Ax * Nx[:, None, None, None]) + (Ay * Px[:, None, None, None]) + (Az * Qx[:, None, None, None])  # A dot N = A_parallel
+        Ap = (Ax * Ny[:, None, None, None]) + (Ay * Py[:, None, None, None]) + (Az * Qy[:, None, None, None])  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
+        Aq = (Ax * Nz[:, None, None, None]) + (Ay * Pz[:, None, None, None]) + (Az * Qz[:, None, None, None])  # 
+    
+    else:
+        An = (Ax * Nx) + (Ay * Px) + (Az * Qx)  # A dot N = A_parallel
+        Ap = (Ax * Ny) + (Ay * Py) + (Az * Qy)  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
+        Aq = (Ax * Nz) + (Ay * Pz) + (Az * Qz)  # 
 
-    return (An, Ap, Aq)
+    return(An, Ap, Aq)
 
 def field_aligned_coordinates(B_vec):
-    Bmag = np.linalg.norm(B_vec)
+    if B_vec.shape[0] > 3:
+        Bmag = np.nanmean(np.linalg.norm(B_vec, axis=1))
 
-    # The defined unit vector
-    Nx = B_vec[0]/Bmag
-    Ny = B_vec[1]/Bmag
-    Nz = B_vec[2]/Bmag
+        # The defined unit vector
+        Nx = B_vec[:,0]/Bmag
+        Ny = B_vec[:,1]/Bmag
+        Nz = B_vec[:,2]/Bmag
 
-    # Some random unit vector
-    Rx = 0
-    Ry = 1
-    Rz = 0
+        # Some random unit vector
+        Rx = np.zeros(len(Nx))
+        Ry = np.ones(len(Ny))
+        Rz = np.zeros(len(Nz))
 
-    # Get the first perp component
-    TEMP_Px = (Ny * Rz) - (Nz * Ry)
-    TEMP_Py = (Nz * Rx) - (Nx * Rz)
-    TEMP_Pz = (Nx * Ry) - (Ny * Rx)
+        # Get the first perp component
+        TEMP_Px = (Ny * Rz) - (Nz * Ry)
+        TEMP_Py = (Nz * Rx) - (Nx * Rz)
+        TEMP_Pz = (Nx * Ry) - (Ny * Rx)
 
-    Pmag = np.sqrt(TEMP_Px**2 + TEMP_Py**2 + TEMP_Pz**2)
+        Pmag = np.sqrt(TEMP_Px**2 + TEMP_Py**2 + TEMP_Pz**2)
 
-    Px = TEMP_Px / Pmag
-    Py = TEMP_Py / Pmag
-    Pz = TEMP_Pz / Pmag
+        Px = TEMP_Px / Pmag
+        Py = TEMP_Py / Pmag
+        Pz = TEMP_Pz / Pmag
 
-    Qx = (Pz * Ny) - (Py * Nz)
-    Qy = (Px * Nz) - (Pz * Nx)
-    Qz = (Py * Nx) - (Px * Ny)
+        Qx = (Pz * Ny) - (Py * Nz)
+        Qy = (Px * Nz) - (Pz * Nx)
+        Qz = (Py * Nx) - (Px * Ny)
 
-    return (Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz)
+        return(Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz)
+    else:
+        Bmag = np.linalg.norm(B_vec)
+
+        # The defined unit vector
+        Nx = B_vec[0]/Bmag
+        Ny = B_vec[1]/Bmag
+        Nz = B_vec[2]/Bmag
+
+        # Some random unit vector
+        Rx = 0
+        Ry = 1
+        Rz = 0
+
+        # Get the first perp component
+        TEMP_Px = (Ny * Rz) - (Nz * Ry)
+        TEMP_Py = (Nz * Rx) - (Nx * Rz)
+        TEMP_Pz = (Nx * Ry) - (Ny * Rx)
+
+        Pmag = np.sqrt(TEMP_Px**2 + TEMP_Py**2 + TEMP_Pz**2)
+
+        Px = TEMP_Px / Pmag
+        Py = TEMP_Py / Pmag
+        Pz = TEMP_Pz / Pmag
+
+        Qx = (Pz * Ny) - (Py * Nz)
+        Qy = (Px * Nz) - (Pz * Nx)
+        Qz = (Py * Nx) - (Px * Ny)
+
+        return(Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz)
 
 
 def _get_span_L2(trange, CREDENTIALS=None, OVERRIDE=False):
