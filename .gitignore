@@ -11,7 +11,7 @@ __pycache__
 *.zip
 *.mp4
 *.key
-.config
+.config_paths
 *.jpg
 *.ipynb
 *.json

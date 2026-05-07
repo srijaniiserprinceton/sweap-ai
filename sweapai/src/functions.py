@@ -3,6 +3,10 @@ import xarray as xr
 import numpy as np
 from datetime import datetime
 
+from sweapai.src import misc_functions as misc_fn
+
+os.environ["PSP_DATA_DIR"] = misc_fn.read_config()[0]
+
 # Constants for integration
 kB = 1.380649e-23  # J/K
 qe = 1.602176634e-19  # Elementary charge [C]
