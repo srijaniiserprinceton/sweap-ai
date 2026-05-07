@@ -5,12 +5,28 @@ from datetime import datetime
 
 from sweapai.src import misc_functions as misc_fn
 
-os.environ["PSP_DATA_DIR"] = misc_fn.read_config()[0]
+PSP_DATA_DIR = os.environ.get('PSP_DATA_DIR')
 
 # Constants for integration
 kB = 1.380649e-23  # J/K
 qe = 1.602176634e-19  # Elementary charge [C]
 mass_p_kg = 1.6726219e-27 # Proton mass in kg
+
+def get_latest_version(file_names):
+    latest_version = -1
+    latest_file = None
+    
+    for file_name in file_names:
+        # Extract the version number as an integer
+        version_str = file_name.split('_v')[-1].split('.')[0]
+        version = int(version_str)
+        
+        # Update the latest version and file name if current version is higher
+        if version > latest_version:
+            latest_version = version
+            latest_file = file_name
+    
+    return latest_file
 
 def inverse_rotate_vector_field_aligned(Ax, Ay, Az, Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz):
     An = (Ax * Nx) + (Ay * Px) + (Az * Qx)  # A dot N = A_parallel
@@ -69,25 +85,23 @@ def _get_span_L2(trange, CREDENTIALS=None, OVERRIDE=False):
     '''
     date = datetime.strptime(trange[0], '%Y-%m-%dT%H:%M:%S')
     date_string = date.strftime('%Y%m%d')
-    
-    # Get all the key information
-    pwd = os.getcwd()
 
+    
     files = None
-    if (os.path.exists(f'{pwd}/psp_data/sweap/spi')) and (OVERRIDE == False):
+    if (os.path.exists(f'{PSP_DATA_DIR}/sweap/spi')) and (OVERRIDE == False):
         preamble = 'psp_swp_spi_sf00'
         if CREDENTIALS:
             # Credentials means we are using the private data directory.
             level = 'L2'
             dtype = '8Dx32Ex8A'
 
-            file = f'{os.getcwd()}/psp_data/sweap/spi/{level}/spi_sf00/{date.year}/{date.month:02d}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
+            file = f'{PSP_DATA_DIR}/sweap/spi/{level}/spi_sf00/{date.year}/{date.month:02d}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
         else:
             # Loading in the public side of the data.
             level = 'l2'
             dtype = '8dx32ex8a'
 
-            file = f'{os.getcwd()}/psp_data/sweap/spi/{level}/spi_sf00_{dtype}/{date.year}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
+            file = f'{PSP_DATA_DIR}/sweap/spi/{level}/spi_sf00_{dtype}/{date.year}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
 
         if (glob.glob(file)):
             print('Data is already downloaded', flush = True)
@@ -108,6 +122,66 @@ def _get_span_L2(trange, CREDENTIALS=None, OVERRIDE=False):
             files = pyspedas.psp.spi(trange, datatype='spi_sf00', level='L2', notplot=True, time_clip=True, downloadonly=True, last_version=True, get_support_data=True, username=CREDENTIALS[0], password=CREDENTIALS[1])
         else:
             files = pyspedas.psp.spi(trange, datatype='spi_sf00_8dx32ex8a', level='l2', notplot=True, time_clip=True, downloadonly=True, last_version=True, get_support_data=True)
+
+    return(files)
+
+def _get_psp_span_mom(trange, CREDENTIALS=None, OVERRIDE=False):
+    '''
+    Get and download the latest version of the MMS data. 
+
+    Parameters:
+    -----------
+    trange : list of str, datetime object
+             Timerange to download the data
+    probe : int or list of ints
+            Which MMS probe to get the data from.
+    
+    Returns:
+    --------
+
+    TODO : Add check if file is already downloaded and use local file.
+    TODO : Replace with a cdaweb or wget download procedure.
+    '''
+    date = datetime.strptime(trange[0], '%Y-%m-%dT%H:%M:%S')
+    date_string = date.strftime('%Y%m%d')
+    
+    # Get all the key information
+    pwd = os.getcwd()
+
+    files = None
+    if (os.path.exists(f'{pwd}/psp_data/sweap/spi/')) and (OVERRIDE == False):
+        preamble = 'psp_swp_spi_sf00'
+        if CREDENTIALS:
+            # Credentials means we are using the private data directory.
+            level = 'L3'
+            dtype = 'mom'
+
+            file = f'{os.getcwd()}/psp_data/sweap/spi/{level}/spi_sf00/{date.year}/{date.month:02d}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
+        else:
+            # Loading in the public side of the data.
+            level = 'l3'
+            dtype = 'mom'
+
+            file = f'{os.getcwd()}/psp_data/sweap/spi/{level}/spi_sf00_{level}_{dtype}/{date.year}/{preamble}_{level}_{dtype}_{date_string}_v**.cdf'
+
+        if (glob.glob(file)):
+            print('Data is already downloaded', flush = True)
+            latest_version = get_latest_version(glob.glob(file))
+
+            files = [latest_version]
+
+        if files == None:
+            if CREDENTIALS:
+                files = pyspedas.psp.spi(trange, datatype='spi_sf00', level='L3', notplot=True, time_clip=True, downloadonly=True, last_version=True, username=CREDENTIALS[0], password=CREDENTIALS[1])
+            else:
+                files = pyspedas.psp.spi(trange, datatype='spi_sf00_l3_mom', level='l3', notplot=True, time_clip=True, downloadonly=True, last_version=True)
+
+
+    else:
+        if CREDENTIALS:
+            files = pyspedas.psp.spi(trange, datatype='spi_sf00', level='L3', notplot=True, time_clip=True, downloadonly=True, last_version=True, username=CREDENTIALS[0], password=CREDENTIALS[1])
+        else:
+            files = pyspedas.psp.spi(trange, datatype='spi_sf00_l3_mom', level='l3', notplot=True, time_clip=True, downloadonly=True, last_version=True)
 
     return(files)
 

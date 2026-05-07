@@ -1,5 +1,4 @@
 import sys, importlib
-import pyspedas
 
 from sweapai.src import functions as fn
 from sweapai.src import misc_functions as misc_fn
@@ -16,9 +15,9 @@ if __name__=='__main__':
 
     # loading the PSP data for the given TRANGE with optional clipping
     span_L2 = fn.load_span_L2(config['global']['TRANGE'], 
-                              CREDENTIALS=creds, 
+                              CREDENTIALS=None, 
                               CLIP=config['global']['CLIP'])
 
-    span_L3 = fn.load_span_L3(trange,
-                              CREDENTIALS=creds,
+    span_L3 = fn.load_span_L3(config['global']['TRANGE'],
+                              CREDENTIALS=None,
                               CLIP=config['global']['CLIP'])
