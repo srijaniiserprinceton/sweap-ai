@@ -28,27 +28,26 @@ def get_latest_version(file_names):
     
     return latest_file
 
-def inverse_rotate_vector_field_aligned(Ax, Ay, Az, Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz):
+def rotate_vector_field_aligned(Ax, Ay, Az, Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz):
+    # For some Vector A in the SAME COORDINATE SYSTEM AS THE ORIGINAL B-FIELD VECTOR:
     if Ax.ndim == 4:
-        An = (Ax * Nx[:, None, None, None]) + (Ay * Px[:, None, None, None]) + (Az * Qx[:, None, None, None])  # A dot N = A_parallel
-        Ap = (Ax * Ny[:, None, None, None]) + (Ay * Py[:, None, None, None]) + (Az * Qy[:, None, None, None])  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
-        Aq = (Ax * Nz[:, None, None, None]) + (Ay * Pz[:, None, None, None]) + (Az * Qz[:, None, None, None])  # 
+        An = (Ax * Nx[:, None, None, None]) + (Ay * Ny[:, None, None, None]) + (Az * Nz[:, None, None, None])  # A dot N = A_parallel
+        Ap = (Ax * Px[:, None, None, None]) + (Ay * Py[:, None, None, None]) + (Az * Pz[:, None, None, None])  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
+        Aq = (Ax * Qx[:, None, None, None]) + (Ay * Qy[:, None, None, None]) + (Az * Qz[:, None, None, None])  # 
     
     else:
-        An = (Ax * Nx) + (Ay * Px) + (Az * Qx)  # A dot N = A_parallel
-        Ap = (Ax * Ny) + (Ay * Py) + (Az * Qy)  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
-        Aq = (Ax * Nz) + (Ay * Pz) + (Az * Qz)  # 
+        An = (Ax * Nx) + (Ay * Ny) + (Az * Nz)  # A dot N = A_parallel
+        Ap = (Ax * Px) + (Ay * Py) + (Az * Pz)  # A dot P = A_perp (~RTN_N (+/- depending on B), perpendicular to s/c y)
+        Aq = (Ax * Qx) + (Ay * Qy) + (Az * Qz)  # 
 
     return(An, Ap, Aq)
 
 def field_aligned_coordinates(B_vec):
     if B_vec.shape[0] > 3:
-        Bmag = np.nanmean(np.linalg.norm(B_vec, axis=1))
-
         # The defined unit vector
-        Nx = B_vec[:,0]/Bmag
-        Ny = B_vec[:,1]/Bmag
-        Nz = B_vec[:,2]/Bmag
+        Nx = B_vec[:,0]
+        Ny = B_vec[:,1]
+        Nz = B_vec[:,2]
 
         # Some random unit vector
         Rx = np.zeros(len(Nx))
@@ -72,12 +71,10 @@ def field_aligned_coordinates(B_vec):
 
         return(Nx, Ny, Nz, Px, Py, Pz, Qx, Qy, Qz)
     else:
-        Bmag = np.linalg.norm(B_vec)
-
         # The defined unit vector
-        Nx = B_vec[0]/Bmag
-        Ny = B_vec[1]/Bmag
-        Nz = B_vec[2]/Bmag
+        Nx = B_vec[0]
+        Ny = B_vec[1]
+        Nz = B_vec[2]
 
         # Some random unit vector
         Rx = 0

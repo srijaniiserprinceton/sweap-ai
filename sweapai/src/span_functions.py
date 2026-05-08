@@ -1,5 +1,6 @@
 import jax.numpy as jnp
 import numpy as np
+from line_profiler import profile
 
 from sweapai.src import functions as fn
 
@@ -23,7 +24,22 @@ def SPANpolar_to_SPANcartesian(span_L2):
     # making sure that the time axis is the 0th dimension
     return np.swapaxes(np.array([vx, vy, vz]), 0, 1)
 
-def SPANgrids_to_FAgrids(biMax, spangrids, bvec):
+@profile
+def project_SPANgrids_to_FAgrids(biMax, spangrids, bvec):
+    # shifting from the instrument frame to the plasma frame
+    PFgrids = spangrids - biMax['v_core'][:,NAX,NAX,NAX]
+
+    # taking projection along the magnetic field direction
+    vpara = PFgrids[0] * bvec[0] + PFgrids[1] * bvec[1] + PFgrids[2] * bvec[2]
+
+    # computing the perpendicular component
+    vsq = PFgrids[0]**2 + PFgrids[1]**2 + PFgrids[2]**2
+    vperp = np.sqrt(vsq - vpara**2)
+
+    return (vpara, vperp)
+
+@profile
+def rotate_SPANgrids_to_FAgrids(biMax, spangrids, bvec):
     '''
     This function takes the SPAN grids and performs the forward 
     transformation to the FA grids. The transformation consists of two steps:
@@ -44,7 +60,10 @@ def SPANgrids_to_FAgrids(biMax, spangrids, bvec):
     PFgrids = spangrids - biMax['v_core'][:,NAX,NAX,NAX]
 
     # rotating to align with the magnetic field direction
-    FAgrids = fn.inverse_rotate_vector_field_aligned(*PFgrids, 
-                                                     *fn.field_aligned_coordinates(bvec))
+    FAgrids = fn.rotate_vector_field_aligned(*PFgrids, 
+                                             *fn.field_aligned_coordinates(bvec))
 
-    return FAgrids
+    vpara = FAgrids[0]
+    vperp = np.sqrt(FAgrids[1]**2 + FAgrids[2]**2)
+
+    return (vpara, vperp)

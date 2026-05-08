@@ -24,8 +24,8 @@ if __name__=='__main__':
                               CREDENTIALS=None,
                               CLIP=config['global']['CLIP'])
 
-    # getting the magnetic field vector from L3 data
-    bvec = span_L3.MAGF_INST.data
+    # getting the magnetic field unit vector from L3 data
+    bvec = span_L3.MAGF_INST.data / np.linalg.norm(span_L3.MAGF_INST.data, axis=1)[:,np.newaxis]
 
     # making a dummy biMax dictionary for testing
     biMax = {}
@@ -37,5 +37,8 @@ if __name__=='__main__':
     # choosing a time index for testing
     tidx = 0
 
-    # testing SPAN to FA grid conversion
-    fagrids = span_functions.SPANgrids_to_FAgrids(biMax, spangrids[tidx], bvec[tidx])
+    # testing SPAN to FA grid conversion (rotation)
+    vpara_r, vperp_r = span_functions.rotate_SPANgrids_to_FAgrids(biMax, spangrids[tidx], bvec[tidx])
+
+    # testing SPAN to FA grid conversion (projection)
+    vpara_p, vperp_p = span_functions.project_SPANgrids_to_FAgrids(biMax, spangrids[tidx], bvec[tidx])
