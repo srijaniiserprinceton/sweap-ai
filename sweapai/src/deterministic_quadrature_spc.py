@@ -420,7 +420,7 @@ if __name__ == "__main__":
         nphi=24,
         nz=12,
         radial_rule="gauss",
-        n_mc=1000,
+        n_mc=50000,
         n_repeat=3,
     )
 

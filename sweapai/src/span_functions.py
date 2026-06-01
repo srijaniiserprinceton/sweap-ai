@@ -27,7 +27,8 @@ def SPANpolar_to_SPANcartesian(span_L2):
 @profile
 def project_SPANgrids_to_FAgrids(biMax, spangrids, bvec):
     # shifting from the instrument frame to the plasma frame
-    PFgrids = spangrids - biMax['v_core'][:,NAX,NAX,NAX]
+    vcore = biMax['v_core'].reshape((3,) + (1,)*(spangrids.ndim-1))
+    PFgrids = spangrids - vcore
 
     # taking projection along the magnetic field direction
     vpara = PFgrids[0] * bvec[0] + PFgrids[1] * bvec[1] + PFgrids[2] * bvec[2]
