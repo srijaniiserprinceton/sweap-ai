@@ -7,13 +7,13 @@
 
 config = {
     'global': {                                                             #--------GLOBAL PARAMETERS FOR GDF-----------#
-        'TRANGE'          : ['2022-12-07T00:00:00', '2022-12-07T23:59:59'], # Define the time range to load in from pyspedas
+        'TRANGE'          : ['2022-12-08T00:00:00', '2022-12-08T23:59:59'], # Define the time range to load in from pyspedas
         'SYNTHDATA_FILE'  : None,                                           # Path to a data file containing synthetic observation
         'CLIP'            : True,                                           # If you want to clip the loaded day's data to the specified TRANGE
         'START_INDEX'     : 0,                                              # Starting index with respect to the first timestamp in TRANGE
         'CREDS_PATH'      : '../config.json',                                # path to the <.json> file containing credentials
     },
     'span': {
-        'COUNT_THRESHOLD': 2,
+        'COUNT_THRESHOLD': 1,
     },
 }

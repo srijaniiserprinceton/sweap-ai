@@ -347,3 +347,50 @@ def load_span_L3(trange, CREDENTIALS=None, CLIP=False):
         xr_time_array = xr_data.Epoch.data
     
     return(xr_data)
+
+def print_coreandbeam_fit(fit_coreandbeam):
+    x = fit_coreandbeam.x
+
+    logA_c, Ux, Uy, Uz, logvpar_c, logvperp_c = x[:6]
+    logA_b, dU_b, logvpar_b, logvperp_b = x[6:]
+
+    A_c = 10**logA_c
+    A_b = 10**logA_b
+
+    vpar_c = 10**logvpar_c
+    vperp_c = 10**logvperp_c
+
+    vpar_b = 10**logvpar_b
+    vperp_b = 10**logvperp_b
+
+    # n_c = A_c * (2*np.pi)**1.5 * vpar_c * vperp_c**2
+    # n_b = A_b * (2*np.pi)**1.5 * vpar_b * vperp_b**2
+
+    print("\n" + "="*56)
+    print("           Bi-Maxwellian Core + Beam Fit")
+    print("="*56)
+    print(f"{'Parameter':<24}{'Core':>14}{'Beam':>14}")
+    print("-"*56)
+
+    print(f"{'Amplitude A':<24}{A_c:>14.3e}{A_b:>14.3e}")
+    # print(f"{'Density n':<24}{n_c:>14.3e}{n_b:>14.3e}")
+    print()
+
+    print(f"{'Ux (km/s)':<24}{Ux:>14.2f}{'---':>14}")
+    print(f"{'Uy (km/s)':<24}{Uy:>14.2f}{'---':>14}")
+    print(f"{'Uz (km/s)':<24}{Uz:>14.2f}{'---':>14}")
+    print()
+
+    print(f"{'Drift ΔU∥ (km/s)':<24}{'---':>14}{dU_b:>14.2f}")
+    print()
+
+    print(f"{'vth∥ (km/s)':<24}{vpar_c:>14.2f}{vpar_b:>14.2f}")
+    print(f"{'vth⊥ (km/s)':<24}{vperp_c:>14.2f}{vperp_b:>14.2f}")
+    print()
+
+    print(f"{'T⊥/T∥':<24}{(vperp_c/vpar_c)**2:>14.2f}{(vperp_b/vpar_b)**2:>14.2f}")
+
+    # if n_c > 0:
+    #     print(f"{'Beam/Core Density (%)':<24}{'---':>14}{100*n_b/n_c:>14.1f}")
+
+    print("="*56)

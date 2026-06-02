@@ -36,7 +36,7 @@ if __name__=='__main__':
     spangrids = span_functions.SPANpolar_to_SPANcartesian(span_L2)
 
     # choosing a time index for testing
-    tidx = 0
+    tidx = 100
 
     # testing SPAN to FA grid conversion (projection)
     vpara, vperp = span_functions.project_SPANgrids_to_FAgrids(biMax, spangrids[tidx], bvec[tidx])

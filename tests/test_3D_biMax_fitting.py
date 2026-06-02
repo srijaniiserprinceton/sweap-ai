@@ -7,6 +7,7 @@ from sweapai.src import span_functions
 from sweapai.bimax_fitter_3D import fit_bimax
 
 from sweapai.plotter import compare_fac_to_fit as plotfuncs
+from sweapai.src import functions as funcs
 
 if __name__=='__main__':
     # importing the config file provided at command line
@@ -37,7 +38,7 @@ if __name__=='__main__':
     spangrids = span_functions.SPANpolar_to_SPANcartesian(span_L2)
 
     # choosing a time index for testing
-    tidx = 23500
+    tidx = 18999
 
     # slicing out the velocity grid for that time
     vgrid = spangrids[tidx]
@@ -74,4 +75,5 @@ if __name__=='__main__':
 
     # plotting the fit comparison
     plotfuncs.plot_comparison(vdfdata, vdfdata_max, vgrid, bhat, fit_coreandbeam, component='coreandbeam')
+    funcs.print_coreandbeam_fit(fit_coreandbeam)
 
