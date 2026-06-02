@@ -38,7 +38,7 @@ if __name__=='__main__':
     spangrids = span_functions.SPANpolar_to_SPANcartesian(span_L2)
 
     # choosing a time index for testing
-    tidx = 18999
+    tidx = 23500
 
     # slicing out the velocity grid for that time
     vgrid = spangrids[tidx]

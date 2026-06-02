@@ -147,8 +147,8 @@ def core_and_beam_fitting(tidx, vgrid, vpara, vdfdata, bhat, fit_coreonly):
     # creating bounds for parameters: BEAM
     logA_bounds_BEAM = (logA_init_CORE - 6, logA_init_CORE)
     Udrift_bounds_BEAM = (10**log_vth_para_init_CORE, Dvpara_domain)
-    log_vth_para_bounds_BEAM = (-np.inf, np.log10(Dvpara_domain))
-    log_vth_perp_bounds_BEAM = (-np.inf, np.log10(Dvpara_domain))
+    log_vth_para_bounds_BEAM = (0, np.log10(Dvpara_domain))
+    log_vth_perp_bounds_BEAM = (0, np.log10(Dvpara_domain))
 
     bounds_BEAM = (np.array([logA_bounds_BEAM[0], Udrift_bounds_BEAM[0], log_vth_para_bounds_BEAM[0], log_vth_perp_bounds_BEAM[0]]),
                    np.array([logA_bounds_BEAM[1], Udrift_bounds_BEAM[1], log_vth_para_bounds_BEAM[1], log_vth_perp_bounds_BEAM[1]]))
