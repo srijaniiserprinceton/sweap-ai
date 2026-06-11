@@ -89,7 +89,7 @@ def plot_comparison(vdfdata, vdfdata_max, vgrid, bhat, fit_result, component='co
 
 
         plt.subplot(1, 3, 3)
-        plt.title('Fitted Bi-Maxwellian VDF')
+        plt.title('Residual VDF')
         norm = mcolors.TwoSlopeNorm(vcenter=0)
 
         # calculating the residual in log space
@@ -115,14 +115,14 @@ def plot_comparison(vdfdata, vdfdata_max, vgrid, bhat, fit_result, component='co
         plt.gca().set_aspect('equal', adjustable='box')
         
         plt.subplot(2, 2, 2)
-        plt.title('Fitted Bi-Maxwellian VDF')
+        plt.title('SPAN-res Bi-Maxwellian VDF')
         plt.tricontourf(vperp, vpara, np.log10(model_vdf), levels=levels)
         plt.colorbar(label='VDF Value')
         plt.gca().set_aspect('equal', adjustable='box')
 
 
         plt.subplot(2, 2, 3)
-        plt.title('Fitted Bi-Maxwellian VDF')
+        plt.title('High-res Bi-Maxwellian VDF')
         norm = mcolors.TwoSlopeNorm(vcenter=0)
 
         plt.tricontourf(vvperp_dense.flatten(), vvpara_dense.flatten(), np.log10(model_vdf_dense), levels=levels)
@@ -130,7 +130,7 @@ def plot_comparison(vdfdata, vdfdata_max, vgrid, bhat, fit_result, component='co
         plt.gca().set_aspect('equal', adjustable='box')
 
         plt.subplot(2, 2, 4)
-        plt.title('Fitted Bi-Maxwellian VDF')
+        plt.title('Residual VDF')
         norm = mcolors.TwoSlopeNorm(vcenter=0)
 
         # calculating the residual in log space

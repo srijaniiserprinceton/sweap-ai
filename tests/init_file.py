@@ -15,6 +15,6 @@ config = {
         'CREDS_PATH'      : '../config.json',                                # path to the <.json> file containing credentials
     },
     'span': {
-        'COUNT_THRESHOLD': 2,
+        'COUNT_THRESHOLD': 1,
     },
 }

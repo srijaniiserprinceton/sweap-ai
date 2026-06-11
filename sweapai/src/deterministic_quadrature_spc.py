@@ -2,8 +2,8 @@
 import time
 from dataclasses import dataclass
 from typing import Optional, Dict, Tuple
-
 import numpy as np
+import matplotlib.pyplot as plt; plt.ion()
 
 # These come from the earlier translated files you already have.
 from fc_fov_sampling import (
@@ -412,6 +412,9 @@ def angular_constants_from_spectrum(flux, vz_lo, vz_hi, alpha_rad):
 
 
 if __name__ == "__main__":
+    n_mc = 10000
+    ns, nphi, nz = 16, 24, 12
+
     # Example one-shot comparison
     out = compare_quadrature_vs_mc(
         params={"vx": 100.0, "vy": 50.0, "vz": 250.0, "w": 50.0, "n": 1000.0},
@@ -420,7 +423,7 @@ if __name__ == "__main__":
         nphi=24,
         nz=12,
         radial_rule="gauss",
-        n_mc=50000,
+        n_mc=n_mc,
         n_repeat=3,
     )
 
@@ -459,3 +462,18 @@ if __name__ == "__main__":
     print("det from flux mean over bins:", C_det_from_flux.mean(axis=1))
     print("mc  from flux mean over bins:", C_mc_from_flux.mean(axis=1))
     print("mc std over bins:", C_mc_from_flux.std(axis=1))
+
+    # plotting the outputs for comparison
+    fig, ax = plt.subplots(2, 2, figsize=(10,10), sharex=True, layout='constrained')
+
+    for i in range(4):
+        row, col = i//2, i%2
+        ax[row,col].plot(out['det_flux'][i], '.-r')
+        ax[row,col].plot(out['mc_flux'][i], '.-k')
+        ax[row,col].grid(True)
+        ax[row,col].set_ylabel('Flux', fontsize=16)
+        ax[row,col].set_xlabel('Voltage window index', fontsize=16)
+
+    plt.suptitle(f'Nmc = {n_mc},   NQuadrature = ({ns},{nphi},{nz})', fontsize=16)
+    plt.savefig(f'Nmc={n_mc}.png')
+    
